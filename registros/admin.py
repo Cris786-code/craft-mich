@@ -30,4 +30,24 @@ class MensajeContactoAdmin(admin.ModelAdmin):
     list_display = ('asunto', 'nombre', 'email', 'fecha_envio', 'leido')
     list_filter = ('leido', 'fecha_envio')
     search_fields = ('nombre', 'email', 'asunto')
-    list_editable = ('leido',)
+    actions = ["marcar_como_leido", "marcar_como_no_leido"] #SE agrega una accion personalizada para marcar mensajes como leídos o no leídos
+
+    # Acciones personalizadas para marcar mensajes como leídos o no leídos
+    @admin.action(description='Marcar mensajes seleccionados como LEIDOS')
+    def marcar_como_leido(self, request, queryset):
+        filas_actualizadas = queryset.update(leido=True) #Segun las casillas seleccionazadas, se actualiza el campo Leido a True (leido) o false (no leido)
+        self.message_user(
+            request,
+            f'Se actualizaron {filas_actualizadas} mensajes como leidos correctamente' #por ultimo al guardar los cambios, se muestra un mensaje de confirmacion para el usuario admin
+        )
+
+    @admin.action(description='Marcar mensajes seleccionados como No LEIDOS')
+    def marcar_como_no_leido(self, request, queryset):
+        filas_actualizadas = queryset.update(leido=False)
+        self.message_user(
+            request,
+            f'Se actualizaron {filas_actualizadas} mensajes como no leidos correctamente'
+        )
+
+
+
